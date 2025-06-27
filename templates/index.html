@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="60">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Tracker</title>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <style>
+        * {
+            padding: 0;
+            margin: 5px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+            background: #fcfcfc;
+            overflow-y: auto;
+        }
+
+        .app-container {
+            margin: 40px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0 20px;
+            max-width: 800px;
+        }
+
+
+        h2 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .input-container form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box input {
+            width: 250px;
+            height: 40px;
+            font-size: 0.95em;
+            padding-left: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-number input {
+            width: 100px;
+            height: 40px;
+            font-size: 0.95em;
+            padding-left: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-box label {
+            position: absolute;
+            left: 15px;
+            top: 12px;
+            font-size: 0.95em;
+            color: #999;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+
+        .input-box input:focus + label,
+        .input-box input:valid + label {
+            top: -10px;
+            left: 10px;
+            font-size: 0.75em;
+            background: white;
+            padding: 0 5px;
+            color: #80669d;
+        }
+
+        button {
+            width: 150px;
+            height: 40px;
+            font-size: 12px;
+            padding: 0.4em 1.5em;
+            border: 2px solid #80669d;
+            border-radius: 4px;
+            background: white;
+            color: #80669d;
+            cursor: pointer;
+            transition: 0.3s ease all;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: #80669d;
+            color: white;
+        }
+
+        .wrapper {
+            width: 100%;
+        }
+
+        .collapsible {
+            width: 100%;
+            overflow: hidden;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+
+        .collapsible input {
+            display: none;
+        }
+
+        .collapsible label {
+            position: relative;
+            font-weight: 600;
+            background: #999;
+            color: #1c1c6b;
+            display: block;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 5px 11px rgba(0, 0, 0, .1);
+        }
+
+        .collapsible label:after {
+            content: "";
+            position: absolute;
+            right: 12px;
+            top: 16px;
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M9 18l6-6-6-6'/></svg>");
+            background-repeat: no-repeat;
+            background-size: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .collapsible input:checked + label:after {
+            transform: rotate(90deg);
+        }
+
+        .collapsible-text {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: max-height 0.4s ease, opacity 0.4s ease;
+            background: #eee;
+            border-radius: 0 0 4px 4px;
+        }
+
+        .collapsible input:checked ~ .collapsible-text {
+            max-height: 1000px;
+            opacity: 1;
+            padding: 10px 0;
+        }
+
+        .collapsible-text h2 {
+            text-align: center;
+            color: #1c1c6b;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .product-details {
+            padding: 10px;
+        }
+
+        .details-top {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .product-img {
+            width: 120px;
+            height: auto;
+            border-radius: 6px;
+            object-fit: contain;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .product-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #1c1c6b;
+        }
+
+        .table-container {
+            height: 250px;
+            overflow-x: auto;
+            background-color: #fff;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 0 5px #ccc;
+            border-radius: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #e0e0e0;
+            z-index: 2;
+            text-align: center;
+            padding: 0.3rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 0.25rem 0.4rem;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+        }
+
+        .img-text-container {
+            width: 100%;
+        }
+
+        .button-submit {
+            display: flex;
+            justify-content: center;
+        }
+
+        .circle-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background-color: #80669d;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .circle-icon:hover {
+      background-color: #80669d;
+      transform: scale(1.1);
+    }
+
+
+        @media screen and (max-width: 600px) {
+            .details-top {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .product-info {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <h2>Amazon Product Tracker</h2><br>
+    <a class="circle-icon" href="{{ url_for('redirect_main_page') }}">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <div class="Container">
+        <div class="input-container">
+            <form method="POST">
+                <div class="input-box">
+                    <input type="text" id="amazon_id" name="amazon_id" required>
+                    <label for="amazon_id">Amazon Product IDs </label><br>
+                    <small style="font-size: 12px;">Amazon Product ID, Use comma for Multiple Product</small>
+                </div>
+
+                <div class="input-number">
+                    <input type="number" name="Minutes" min="1" value="1"><br>
+                    <small style="font-size: 12px;">Duration (Per Minute)</small>
+                </div>
+
+                <div class="button-submit">
+                    <button type="submit">Fetch Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if amazon_data %}
+    {% for pid, data in amazon_data.items() %}
+    <div class="img-text-container">
+        <div class="wrapper">
+            <div class="collapsible">
+                <input type="checkbox" id="amazon_collapsible_{{ loop.index }}">
+                <label for="amazon_collapsible_{{ loop.index }}">Product Title: {{ data.title }}</label>
+                <div class="collapsible-text">
+                    <div class="product-details">
+                        <h2>Amazon Details Available Below</h2>
+                        <div class="details-top">
+                            <img src="{{ data.img }}" alt="Product Image" class="product-img">
+                            <div class="product-info">
+                                <p><strong>Rating:</strong> {{ data.rating }}</p>
+                                <p><strong>Occurance Per Mintue:</strong> {{ data.timer }}</p>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Price</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for entry in data.history %}
+                                <tr>
+                                    <td>{{ entry.date }}</td>
+                                    <td>{{ entry.time }}</td>
+                                    <td>{{ entry.price }}</td>
+                                </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <!-- Download Button After All Collapsibles -->
+        <div class="img-text-container">
+            <div class="button-submit">
+                <a href="{{ url_for('download_excel') }}">
+                    <button type="submit">Download Excel</button>
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
